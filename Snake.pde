@@ -15,6 +15,7 @@ class Snake {
   }
   
   void update() {
+    justAte = false;
     prev_head = pos[0].get();
     pos[0].add(vel);
     this.checkEatFood();
@@ -62,7 +63,7 @@ class Snake {
     }
   }
 
-  void decideMove() {
+  void search() {
     this.controller.control();
   }
   
@@ -82,6 +83,7 @@ class Snake {
   
   boolean ateFood() {
     if(this.pos[0].x == food_pos.x && this.pos[0].y == food_pos.y) {
+      justAte = true;
       return true;
     }
     return false;

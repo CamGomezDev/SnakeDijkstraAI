@@ -1,35 +1,62 @@
-public class Controller {
+public class Controller1 {
 
   boolean inLongestPath = false;
   ArrayList<PVector> longestPath = new ArrayList<PVector>();
+  ArrayList<PVector> mainSearch = new ArrayList<PVector>();
+  ArrayList<PVector> mainPathGeneral = new ArrayList<PVector>();
 
   void control() {
+    mainSearch = new ArrayList<PVector>();
+    mainPathGeneral = dijkstra(snake, int(food_pos.x/scl), int(food_pos.y/scl), false);
 
-    ArrayList<PVector> mainPath = dijkstra(snake, int(food_pos.x/scl), int(food_pos.y/scl), false);
-
-    if(mainPath.size() > 0) {
-      Snake virtualSnake = snake.copy();
-      int[] currentHead = {0,0};
-
-      for (int i = 1; i < mainPath.size(); ++i) {
-        //posible error por no ser -1
-        currentHead[0] = int(virtualSnake.pos[0].x/scl);
-        currentHead[1] = int(virtualSnake.pos[0].y/scl);
-        chooseSpeed(virtualSnake, mainPath.get(i), currentHead);
-        if(i == mainPath.size() - 1) {
-          virtualSnake.eatsFood();
-        }
-        virtualSnake.update();
-      }
-
-      //posible error por no ser -1
-      ArrayList<PVector> tracebackBack = dijkstra(virtualSnake, int(virtualSnake.pos[virtualSnake.pos.length-1].x/scl), int(virtualSnake.pos[virtualSnake.pos.length-1].y/scl), false);
-
-      int[] mainHead = {int(snake.pos[0].x/scl), int(snake.pos[0].y/scl)};
-      if(tracebackBack.size() > 0) {
-        chooseSpeed(snake, mainPath.get(1), mainHead);
-        inLongestPath = false;
+    if(mainPathGeneral.size() > 0) {
+      if(justDijkstra) {
+        int[] mainHead = {int(snake.pos[0].x/scl), int(snake.pos[0].y/scl)};
+        chooseSpeed(snake, mainPathGeneral.get(1), mainHead);
       } else {
+        Snake virtualSnake = snake.copy();
+        int[] currentHead = {0,0};
+
+        for (int i = 1; i < mainPathGeneral.size(); ++i) {
+          //posible error por no ser -1
+          currentHead[0] = int(virtualSnake.pos[0].x/scl);
+          currentHead[1] = int(virtualSnake.pos[0].y/scl);
+          chooseSpeed(virtualSnake, mainPathGeneral.get(i), currentHead);
+          if(i == mainPathGeneral.size() - 1) {
+            virtualSnake.eatsFood();
+          }
+          virtualSnake.update();
+        }
+
+        //posible error por no ser -1
+        ArrayList<PVector> tracebackBack = dijkstra(virtualSnake, int(virtualSnake.pos[virtualSnake.pos.length-1].x/scl), int(virtualSnake.pos[virtualSnake.pos.length-1].y/scl), false);
+
+        int[] mainHead = {int(snake.pos[0].x/scl), int(snake.pos[0].y/scl)};
+        if(tracebackBack.size() > 0) {
+          chooseSpeed(snake, mainPathGeneral.get(1), mainHead);
+          inLongestPath = false;
+        } else {
+          if(inLongestPath && longestPath.size() > 1) {
+            chooseSpeed(snake, longestPath.get(1), mainHead);
+            longestPath.remove(0);
+          } else {
+            longestPathHeadTail();
+          }
+        }
+      }
+    } else {
+      if(justDijkstra) {
+        ArrayList<PVector> haltPath = new ArrayList<PVector>();
+        for (int h = snake.pos.length-1; h > 0; h--) {
+          haltPath = dijkstra(snake, int(snake.pos[h].x/scl), int(snake.pos[h].y/scl), false);
+          if(haltPath.size() > 0) {
+            break;
+          }
+        }
+
+        longestPathHeadTail();
+      } else {
+        int[] mainHead = {int(snake.pos[0].x/scl), int(snake.pos[0].y/scl)};
         if(inLongestPath && longestPath.size() > 1) {
           chooseSpeed(snake, longestPath.get(1), mainHead);
           longestPath.remove(0);
@@ -37,17 +64,25 @@ public class Controller {
           longestPathHeadTail();
         }
       }
-    } else {
-      int[] mainHead = {int(snake.pos[0].x/scl), int(snake.pos[0].y/scl)};
-      if(inLongestPath && longestPath.size() > 1) {
-        chooseSpeed(snake, longestPath.get(1), mainHead);
-        longestPath.remove(0);
-      } else {
-        longestPathHeadTail();
-      }
     }
+  }
 
-    renderingSearch = true;
+  void renderMainSearch() {
+    if(mainSearch.size() > 0) {
+      frameRate(2000);
+      fill(color(255,255,0));
+      noStroke();
+      rect(mainSearch.get(0).x*scl + 1, mainSearch.get(0).y*scl + 1, scl - 1, scl - 1);
+      if(mainSearch.get(0).x*scl == food_pos.x && mainSearch.get(0).y*scl == food_pos.y) {
+        fill(color(255,165,0));
+        for (PVector place : mainPathGeneral) {
+          rect(place.x*scl + 1, place.y*scl + 1, scl - 1, scl - 1);
+        }
+      }
+      mainSearch.remove(0);
+    } else {
+      renderingMainSearch = false;
+    }
   }
 
   ArrayList<PVector> dijkstra(Snake currentSnake, int desX, int desY, boolean print) {
@@ -91,6 +126,9 @@ public class Controller {
       queue.remove(0);
 
       if(int(horIndex) != firstNode[0] || int(verIndex) != firstNode[1]) {
+        if(!renderingMainSearch) {
+          mainSearch.add(new PVector(horIndex, verIndex));
+        }
         nodes[horIndex][verIndex] = value;
         checked[horIndex][verIndex] = true;
       }
@@ -120,11 +158,31 @@ public class Controller {
       tracebackNode[1] = int(move.y);
     }
 
+    renderingMainSearch = true;
     return tracebackNodes;
   }
 
   void longestPathHeadTail() {
-    ArrayList<PVector> path = dijkstra(snake, int(snake.pos[snake.pos.length-1].x/scl), int(snake.pos[snake.pos.length-1].y/scl), false);
+    // wentToTail = true;
+    ArrayList<PVector> path = longestPathHeadTo(int(snake.pos[snake.pos.length-1].x/scl), int(snake.pos[snake.pos.length-1].y/scl));
+
+    println(path.size());
+    if(path.size() > 0) {
+      int[] mainHead = {int(snake.pos[0].x/scl), int(snake.pos[0].y/scl)};
+      chooseSpeed(snake, path.get(1), mainHead);
+      path.remove(0);
+      longestPath = path;
+      inLongestPath = true;
+    } else {
+      //Esto por alguna razón nunca se ejecuta cosa que es extraña pero me da pereza averiguar por qué
+      println("No hay contacto de cabeza a cola");
+      delay(30000);
+      System.exit(0);
+    }
+  }
+
+  ArrayList<PVector> longestPathHeadTo(int desX, int desY) {
+    ArrayList<PVector> path = dijkstra(snake, desX, desY, false);
 
     //A very long print function
     // for (int o = 0; o < height; ++o) {
@@ -197,12 +255,11 @@ public class Controller {
       path.remove(0);
       longestPath = path;
       inLongestPath = true;
-    } else {
-      //Esto por alguna razón nunca se ejecuta cosa que es extraña pero me da pereza averiguar por qué
-      println("No hay contacto de cabeza a cola");
-      delay(30000);
-      System.exit(0);
+
+      return path;
     }
+
+    return new ArrayList<PVector>();
   }
 
   int checkSideNode(int checked, int checkTo, int checkHor, int checkVer, int cValue, int[][] nodes, ArrayList<PVector> queue, Snake cSnake) {
