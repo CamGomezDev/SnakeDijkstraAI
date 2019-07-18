@@ -1,17 +1,19 @@
 int fps = 300;
 
-// Modo ventana, tablero 36x27
-// int scl = 22;
-
-// Pantalla completa, tablero 36x27
-int scl = 28;
+// Tablero 36x27
 int width = 36;
 int height = 27;
+// Tablero 12x12
+// int width = 12;
+// int height = 12;
+
+// Modo ventana para tablero 36x27
+int scl = 22;
+// Pantalla completa, tablero 36x27
+// int scl = 28;
 
 // Pantalla completa, tablero 12x12
 // int scl = 63;
-// int width = 12;
-// int height = 12;
 
 int bgcol = color(44, 47, 124);
 int gridcol = color(114, 119, 255);
@@ -21,31 +23,33 @@ int searchcol = color(152, 69, 209);
 int shortpathcol = color(242, 149, 29);
 int longpathcol = color(255, 250, 0);
 
+// no mostrar búsqueda (true) o sí mostrarla (false)
 boolean notRenderSearchKey = true;
 boolean renderingMainSearch = false;
 boolean gamePaused = false;
 boolean nextFrame = false;
+// sólo usar algoritmo sencillo (true) o usar el complejo (false)
 boolean justDijkstra = false;
 
 Snake snake;
 PVector food_pos = new PVector(floor(random(width))*scl, floor(random(height))*scl);
 
-// void settings() {
-//   size(scl*width+1, scl*height+1);
-// }
+void settings() {
+  size(scl*width+1, scl*height+1);
+}
 
 void setup() {
-  background(bgcol);
-  fullScreen();
-  pushMatrix();
-  translate(170,6);
+  // background(bgcol);
+  // fullScreen();
+  // pushMatrix();
+  // translate(170,6);
 
   grid(gridcol);
   snake = new Snake(false);
   updateFood();
   renderFood();
 
-  popMatrix();
+  // popMatrix();
 }
 
 int p = 0;
@@ -57,8 +61,8 @@ void draw() {
     if(!renderingMainSearch) {
       frameRate(fps);
     }
-    pushMatrix();
-    translate(170,6);
+    // pushMatrix();
+    // translate(170,6);
     if(!renderingMainSearch) {
       background(bgcol);
       grid(gridcol);
@@ -85,7 +89,7 @@ void draw() {
     }
     snake.render();
     renderFood();
-    popMatrix();
+    // popMatrix();
     if(snake.controller.mainSearch.size() == 0 && snake.controller.inLongestPath && p==2) {
       delay(3000);
     }

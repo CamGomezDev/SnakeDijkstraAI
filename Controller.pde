@@ -7,7 +7,7 @@ public class Controller {
 
   void control() {
     mainSearch = new ArrayList<PVector>();
-    mainPathGeneral = dijkstra(snake, int(food_pos.x/scl), int(food_pos.y/scl), false);
+    mainPathGeneral = dijkstra(snake, int(food_pos.x/scl), int(food_pos.y/scl), true);
 
     if(mainPathGeneral.size() > 0) {
       if(justDijkstra) {
@@ -140,6 +140,8 @@ public class Controller {
       if(queue.size() == 0) {
         somethingInQueue = false;
         if(print) {
+          println("===================================================");
+          println("===================================================");
           printScreen(nodes);
         }
       }
@@ -169,7 +171,7 @@ public class Controller {
   void longestPathHeadTail() {
     ArrayList<PVector> path = dijkstra(snake, int(snake.pos[snake.pos.length-1].x/scl), int(snake.pos[snake.pos.length-1].y/scl), false);
 
-    //A very long print function
+    // Imprime 
     // for (int o = 0; o < height; ++o) {
     //   for (int oo = 0; oo < width; ++oo) {
     //     boolean matchFound = false;

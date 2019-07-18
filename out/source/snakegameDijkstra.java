@@ -15,24 +15,21 @@ import java.io.IOException;
 public class snakegameDijkstra extends PApplet {
 
 int fps = 300;
-// int scl = 22;
 
-int scl = 28;
+// Tablero 36x27
 int width = 36;
 int height = 27;
-
-//
-// int scl = 63;
+// Tablero 12x12
 // int width = 12;
 // int height = 12;
 
-// int bgcol = color(29,30,58);
-// int gridcol = color(113,112,110);
-// int snakecol = color(0,204,102);
-// int foodcol = color(255,78,96);
-// int searchcol = color(0, 133, 140);
-// int shortpathcol = color(255, 165, 0);
-// int longpathcol = color(255, 255, 0);
+// Modo ventana para tablero 36x27
+int scl = 18;
+// Pantalla completa, tablero 36x27
+// int scl = 28;
+
+// Pantalla completa, tablero 12x12
+// int scl = 63;
 
 int bgcol = color(44, 47, 124);
 int gridcol = color(114, 119, 255);
@@ -42,31 +39,33 @@ int searchcol = color(152, 69, 209);
 int shortpathcol = color(242, 149, 29);
 int longpathcol = color(255, 250, 0);
 
+// no mostrar búsqueda (true) o sí mostrarla (false)
 boolean notRenderSearchKey = true;
 boolean renderingMainSearch = false;
 boolean gamePaused = false;
 boolean nextFrame = false;
+// sólo usar algoritmo sencillo (true) o usar el complejo (false)
 boolean justDijkstra = false;
 
 Snake snake;
 PVector food_pos = new PVector(floor(random(width))*scl, floor(random(height))*scl);
 
-// void settings() {
-//   size(scl*width+1, scl*height+1);
-// }
+public void settings() {
+  size(scl*width+1, scl*height+1);
+}
 
 public void setup() {
-  background(bgcol);
-  
-  pushMatrix();
-  translate(170,6);
+  // background(bgcol);
+  // fullScreen();
+  // pushMatrix();
+  // translate(170,6);
 
   grid(gridcol);
   snake = new Snake(false);
   updateFood();
   renderFood();
 
-  popMatrix();
+  // popMatrix();
 }
 
 int p = 0;
@@ -78,8 +77,8 @@ public void draw() {
     if(!renderingMainSearch) {
       frameRate(fps);
     }
-    pushMatrix();
-    translate(170,6);
+    // pushMatrix();
+    // translate(170,6);
     if(!renderingMainSearch) {
       background(bgcol);
       grid(gridcol);
@@ -106,7 +105,7 @@ public void draw() {
     }
     snake.render();
     renderFood();
-    popMatrix();
+    // popMatrix();
     if(snake.controller.mainSearch.size() == 0 && snake.controller.inLongestPath && p==2) {
       delay(3000);
     }
@@ -590,7 +589,7 @@ public class Controller {
 
   public void control() {
     mainSearch = new ArrayList<PVector>();
-    mainPathGeneral = dijkstra(snake, PApplet.parseInt(food_pos.x/scl), PApplet.parseInt(food_pos.y/scl), false);
+    mainPathGeneral = dijkstra(snake, PApplet.parseInt(food_pos.x/scl), PApplet.parseInt(food_pos.y/scl), true);
 
     if(mainPathGeneral.size() > 0) {
       if(justDijkstra) {
@@ -723,6 +722,8 @@ public class Controller {
       if(queue.size() == 0) {
         somethingInQueue = false;
         if(print) {
+          println("===================================================");
+          println("===================================================");
           printScreen(nodes);
         }
       }
@@ -752,7 +753,7 @@ public class Controller {
   public void longestPathHeadTail() {
     ArrayList<PVector> path = dijkstra(snake, PApplet.parseInt(snake.pos[snake.pos.length-1].x/scl), PApplet.parseInt(snake.pos[snake.pos.length-1].y/scl), false);
 
-    //A very long print function
+    // Imprime 
     // for (int o = 0; o < height; ++o) {
     //   for (int oo = 0; oo < width; ++oo) {
     //     boolean matchFound = false;
@@ -1090,7 +1091,6 @@ class Snake {
     return copy;
   }
 }
-  public void settings() {  fullScreen(); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "snakegameDijkstra" };
     if (passedArgs != null) {
