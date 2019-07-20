@@ -1,20 +1,20 @@
 int fps = 300;
 
 // Tablero 36x27
-int width = 36;
-int height = 27;
+int horSqrs = 36;
+int verSqrs = 27;
 // Tablero 12x12
-// int width = 12;
-// int height = 12;
+// int horSqrs = 12;
+// int verSqrs = 12;
 
 // Modo ventana para tablero 36x27
 int scl = 22;
 // Pantalla completa, tablero 36x27
 // int scl = 28;
-
 // Pantalla completa, tablero 12x12
 // int scl = 63;
 
+// Colores
 int bgcol = color(44, 47, 124);
 int gridcol = color(114, 119, 255);
 int snakecol = color(0, 249, 124);
@@ -27,18 +27,22 @@ int longpathcol = color(255, 250, 0);
 boolean notRenderSearchKey = true;
 boolean renderingMainSearch = false;
 boolean gamePaused = false;
-boolean nextFrame = false;
-// sólo usar algoritmo sencillo (true) o usar el complejo (false)
+/* Nótese que hay dos modos de búsqueda: el más simple, que solo
+   hace búsqueda por Dijkstra y no completa el juego, y uno más complejo
+   que además de Dijsktra comprueba si la serpiente se encierra. Con esta
+   variable se elige cuál usar, y nótese que en keyPressed() hay una tecla
+   para cambiarla dentro del juego */
 boolean justDijkstra = false;
 
 Snake snake;
-PVector food_pos = new PVector(floor(random(width))*scl, floor(random(height))*scl);
+PVector food_pos = new PVector(floor(random(horSqrs))*scl, floor(random(verSqrs))*scl);
 
 void settings() {
-  size(scl*width+1, scl*height+1);
+  size(scl*horSqrs+1, scl*verSqrs+1);
 }
 
 void setup() {
+  // Para pantalla completa
   // background(bgcol);
   // fullScreen();
   // pushMatrix();
@@ -49,7 +53,7 @@ void setup() {
   updateFood();
   renderFood();
 
-  // popMatrix();
+  //popMatrix(); // Para pantalla completa
 }
 
 int p = 0;
@@ -61,8 +65,11 @@ void draw() {
     if(!renderingMainSearch) {
       frameRate(fps);
     }
+    // Para pantalla completa
     // pushMatrix();
     // translate(170,6);
+
+    // Si la búsqueda no se está mostrando, avanzar el juego normal...
     if(!renderingMainSearch) {
       background(bgcol);
       grid(gridcol);
@@ -70,13 +77,17 @@ void draw() {
       updateFood();
       snake.search();
       p = 0;
+    // ...pero si la búsqueda sí se está mostrando...
     } else {
       if(snake.justAte) {
+        // primero renderizar la búsqueda principal (la morada con camino naranja)
         snake.controller.renderMainSearch();
+        // y si la serpiente está atrapada y tiene que buscar el camino más largo...
         if(snake.controller.mainSearch.size() == 0 && snake.controller.inLongestPath) {
           p++;
           stroke(longpathcol);
           strokeWeight(4);
+          // dibujar toda línea  de dicho camino (esta es la línea amarilla aparece de vez en cuando)
           line(snake.pos[0].x + scl/2, snake.pos[0].y + scl/2, snake.controller.longestPath.get(0).x*scl + scl/2, snake.controller.longestPath.get(0).y*scl + scl/2);
           for(int i = 0; i < snake.controller.longestPath.size() - 1; i++) {
             line(snake.controller.longestPath.get(i).x*scl + scl/2, snake.controller.longestPath.get(i).y*scl + scl/2, snake.controller.longestPath.get(i+1).x*scl + scl/2, snake.controller.longestPath.get(i+1).y*scl + scl/2);
@@ -89,31 +100,37 @@ void draw() {
     }
     snake.render();
     renderFood();
-    // popMatrix();
+    // popMatrix(); //Para pantalla completa
     if(snake.controller.mainSearch.size() == 0 && snake.controller.inLongestPath && p==2) {
       delay(3000);
     }
   }
 }
 
+// Esto es para dibujar la cuadrícula
 void grid(color col) {
-  for(int i = 0; i < width + 1; i++) {
+  for(int i = 0; i < horSqrs + 1; i++) {
     stroke(col);
-    line(scl*i, 0, scl*i, height*scl); 
+    line(scl*i, 0, scl*i, verSqrs*scl); 
   }
-  for(int i = 0; i < height + 1; i++) {
+  for(int i = 0; i < verSqrs + 1; i++) {
     stroke(col);
-    line(0, scl*i, width*scl, scl*i); 
+    line(0, scl*i, horSqrs*scl, scl*i); 
   }
 }
 
+/*
+  Podría haber creado una clase para la comida pero preferí dejarlo todo
+  en estas dos funciones
+*/
 void updateFood() {
   if(snake.ateFood()) {
     boolean match = true;
     while(match) {
       match = false;
-      food_pos.x = floor(random(width))*scl; 
-      food_pos.y = floor(random(height))*scl;
+      food_pos.x = floor(random(horSqrs))*scl; 
+      food_pos.y = floor(random(verSqrs))*scl;
+      // Esto es para asegurarse de que la comida no salga en un lugar donde hay cuerpo de la serpiente
       for(int i = 0; i < snake.pos.length; i++) {
         if(food_pos.x == snake.pos[i].x && food_pos.y == snake.pos[i].y) {
           match = true;
@@ -129,12 +146,13 @@ void renderFood() {
 }
 
 boolean isOutsideWorld(PVector pos) {
-  if(pos.x >= scl*width || pos.x < 0 || pos.y >= scl*height || pos.y < 0) {
+  if(pos.x >= scl*horSqrs || pos.x < 0 || pos.y >= scl*verSqrs || pos.y < 0) {
     return true;
   }
   return false;
 }
 
+// D: usar solo dijstra, R: mostrar búsqueda, K: pausar, J: desacelerar, L: acelerar
 void keyPressed() {  
   if (key == 'd') {
     justDijkstra = !justDijkstra;
