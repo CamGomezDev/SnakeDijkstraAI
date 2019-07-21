@@ -23,8 +23,7 @@ int searchcol = color(152, 69, 209);
 int shortpathcol = color(242, 149, 29);
 int longpathcol = color(255, 250, 0);
 
-// no mostrar búsqueda (true) o sí mostrarla (false)
-boolean notRenderSearchKey = true;
+boolean notRenderSearchKey = true; // no mostrar búsqueda (true) o sí mostrarla (false)
 boolean renderingMainSearch = false;
 boolean gamePaused = false;
 /* Nótese que hay dos modos de búsqueda: el más simple, que solo
@@ -69,25 +68,23 @@ void draw() {
     // pushMatrix();
     // translate(170,6);
 
-    // Si la búsqueda no se está mostrando, avanzar el juego normal...
-    if(!renderingMainSearch) {
+    if(!renderingMainSearch) { // Si la búsqueda no se está renderizando, avanzar el juego normal...
       background(bgcol);
       grid(gridcol);
       snake.update();
       updateFood();
       snake.search();
       p = 0;
-    // ...pero si la búsqueda sí se está mostrando...
-    } else {
+    } else { // ...pero si la búsqueda sí se está renderizando...
       if(snake.justAte) {
-        // primero renderizar la búsqueda principal (la morada con camino naranja)
-        snake.controller.renderMainSearch();
-        // y si la serpiente está atrapada y tiene que buscar el camino más largo...
+        snake.controller.renderMainSearch(); // primero renderizar la búsqueda principal (la morada con camino naranja)
+        /* y si ya acabó de renderizar la  búsqueda y la serpiente está atrapada
+           y tiene que buscar el camino más largo... */
         if(snake.controller.mainSearch.size() == 0 && snake.controller.inLongestPath) {
           p++;
           stroke(longpathcol);
           strokeWeight(4);
-          // dibujar toda línea  de dicho camino (esta es la línea amarilla aparece de vez en cuando)
+          // ...dibujar toda línea  de dicho camino (esta es la línea amarilla aparece de vez en cuando)
           line(snake.pos[0].x + scl/2, snake.pos[0].y + scl/2, snake.controller.longestPath.get(0).x*scl + scl/2, snake.controller.longestPath.get(0).y*scl + scl/2);
           for(int i = 0; i < snake.controller.longestPath.size() - 1; i++) {
             line(snake.controller.longestPath.get(i).x*scl + scl/2, snake.controller.longestPath.get(i).y*scl + scl/2, snake.controller.longestPath.get(i+1).x*scl + scl/2, snake.controller.longestPath.get(i+1).y*scl + scl/2);
@@ -152,7 +149,7 @@ boolean isOutsideWorld(PVector pos) {
   return false;
 }
 
-// D: usar solo dijstra, R: mostrar búsqueda, K: pausar, J: desacelerar, L: acelerar
+// D: usar solo dijkstra, R: mostrar búsqueda, K: pausar, J: desacelerar, L: acelerar
 void keyPressed() {  
   if (key == 'd') {
     justDijkstra = !justDijkstra;
