@@ -1,13 +1,13 @@
-# I.A. de Snake usando algoritmo de Dijkstra
+# Snake AI with Dijkstra's Algorithm
 
-Este repositorio está diseñado para acompañar este video: https://www.youtube.com/watch?v=BCpKJrGHBJA
+This repository accompanies this video: https://www.youtube.com/watch?v=BCpKJrGHBJA
 
-Específicamente está implementado este algoritmo: https://github.com/chuyangliu/snake/blob/master/docs/algorithms.md#greedy-solver, la única diferencia siendo que en el paso 1 se usó el algoritmo de Dijkstra para computar el camino más corto. Ahí también se explica el algoritmo de alargamiento de ruta.
+Specifically it's implementing this algorithm: https://github.com/chuyangliu/snake/blob/master/docs/algorithms.md#greedy-solver, the only difference being that in step 1, Dijkstra's algorithm was used to compute the shortest path. There the route enlargement algorithm is also explained. 
 
-Los tres archivos importantes con la lógica son `Controller.pde`, `SnakeDijkstraAI.pde` y `Snake.pde`.
+The three main files with all of the logic are `Controller.pde`, `SnakeDijkstraAI.pde` and `Snake.pde`.
 
-Todo está escrito en Processing, así que si se desea probar por cuenta propia tan solo es necesario tener Processing instalado, clonar o descargar este repositorio, abrir en Processing la carpeta en que está y ejecutarlo. Cualquier problema o duda la atiendo en los Issues.
+To run this project it is only necessary to have Processing installed, then clone or download this repository, open in Processing the folder where it's located and then just run it.
 
 ![alt text](https://github.com/dokasov/snakeDijkstraAI/blob/master/img/pic.png)
 
-En la imagen se está ejecutando en VS Code, pero funciona igual de bien en Processing. Lo he comentado tan bien como he podido, sin embargo notar que puede verse desorganizado porque mi principal objetivo cuando lo estaba programando era terminarlo rápido.
+In the image it's being executed in VS Code, but it works equally well in Processing. I've commented it (**in spanish**) as well as I could. It's a bit disorganized however because I just wanted to finish it fast.
