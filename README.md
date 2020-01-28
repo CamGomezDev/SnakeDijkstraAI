@@ -2,7 +2,7 @@
 
 This repository accompanies this video: https://www.youtube.com/watch?v=BCpKJrGHBJA
 
-Specifically it's implementing this algorithm: https://github.com/chuyangliu/snake/blob/master/docs/algorithms.md#greedy-solver, the only difference being that in step 1, Dijkstra's algorithm was used to compute the shortest path. There the route enlargement algorithm is also explained. 
+Specifically it's implementing this algorithm: https://github.com/chuyangliu/snake/blob/master/docs/algorithms.md#greedy-solver, the only difference being that in step 1, Dijkstra's algorithm was used to compute the shortest path. There the longest path algorithm is also explained.
 
 The three main files with all of the logic are `Controller.pde`, `SnakeDijkstraAI.pde` and `Snake.pde`.
 
